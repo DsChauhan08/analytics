@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics Demo Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+    .button {
+      padding: 10px 20px;
+      margin: 10px 5px;
+      cursor: pointer;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+    .button:hover {
+      background: #0056b3;
+    }
+    .config {
+      background: #f5f5f5;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+    input {
+      padding: 8px;
+      width: 100%;
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Analytics Tracking Demo</h1>
+  
+  <div class="config">
+    <h3>Configuration</h3>
+    <label>API Key: <input type="text" id="apiKey" placeholder="Enter your API key"></label>
+    <label>Backend URL: <input type="text" id="backendUrl" value="http://localhost:4000"></label>
+    <button class="button" onclick="initTracking()">Initialize Tracking</button>
+  </div>
+
+  <h2>Test Actions</h2>
+  <p>Perform these actions to generate analytics events:</p>
+  
+  <button class="button" onclick="trackCustomEvent('button_click', {button: 'CTA'})">
+    Track Button Click
+  </button>
+  
+  <button class="button" onclick="trackCustomEvent('form_submit', {form: 'newsletter'})">
+    Track Form Submit
+  </button>
+  
+  <button class="button" onclick="trackCustomEvent('video_play', {video: 'intro'})">
+    Track Video Play
+  </button>
+
+  <a href="#about" class="button" style="display: inline-block; text-decoration: none;">
+    Test Link Click Tracking
+  </a>
+
+  <h2>Manual Tracking</h2>
+  <div class="config">
+    <label>Event Type: <input type="text" id="eventType" placeholder="e.g., custom_event"></label>
+    <label>Event Data (JSON): <input type="text" id="eventData" placeholder='{"key": "value"}'></label>
+    <button class="button" onclick="manualTrack()">Send Event</button>
+  </div>
+
+  <div id="status"></div>
+
+  <script>
+    let apiKey, backendUrl;
+
+    function initTracking() {
+      apiKey = document.getElementById('apiKey').value;
+      backendUrl = document.getElementById('backendUrl').value;
+      
+      if (!apiKey) {
+        alert('Please enter an API key');
+        return;
+      }
+
+      // Create and inject tracker script
+      const script = document.createElement('script');
+      script.src = `${backendUrl}/tracker.js`;
+      script.setAttribute('data-api-key', apiKey);
+      script.setAttribute('data-endpoint', backendUrl);
+      document.head.appendChild(script);
+
+      showStatus('Tracking initialized! All actions will now be tracked.', 'success');
+    }
+
+    function trackCustomEvent(type, payload) {
+      if (window.analytics) {
+        window.analytics.track(type, payload);
+        showStatus(`Tracked: ${type}`, 'success');
+      } else {
+        showStatus('Please initialize tracking first', 'error');
+      }
+    }
+
+    function manualTrack() {
+      const type = document.getElementById('eventType').value;
+      const dataStr = document.getElementById('eventData').value;
+      
+      try {
+        const data = JSON.parse(dataStr || '{}');
+        trackCustomEvent(type, data);
+      } catch (e) {
+        showStatus('Invalid JSON data', 'error');
+      }
+    }
+
+    function showStatus(message, type) {
+      const status = document.getElementById('status');
+      status.textContent = message;
+      status.style.padding = '10px';
+      status.style.marginTop = '20px';
+      status.style.borderRadius = '4px';
+      status.style.background = type === 'success' ? '#d4edda' : '#f8d7da';
+      status.style.color = type === 'success' ? '#155724' : '#721c24';
+      
+      setTimeout(() => {
+        status.textContent = '';
+        status.style.padding = '0';
+      }, 3000);
+    }
+  </script>
+</body>
+</html>

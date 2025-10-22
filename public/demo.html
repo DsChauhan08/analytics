@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Analytics Demo</title>
+  <script src="tracking.js" data-api-key="YOUR_API_KEY_HERE"></script>
+</head>
+<body>
+  <h1>Analytics Demo Page</h1>
+  <p>Open DevTools Network tab to see tracking requests.</p>
+  <a href="/page1">Link 1</a>
+  <a href="/page2">Link 2</a>
+  <button onclick="analytics.track('custom_event', {action: 'button_click'})">
+    Custom Event
+  </button>
+</body>
+</html>
